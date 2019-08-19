@@ -13,13 +13,20 @@ class SimpleViewController: UIViewController {
 
 	@IBOutlet weak var phoneNumberTextField: FPNTextField!
 
-    let countrypicker = FPNCountryPicker()
-	override func viewDidLoad() {
+   // let countrypicker = FPNCountryPicker()
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        phoneNumberTextField.showPhoneCode = false
+    }
+    override func viewDidLoad() {
 		super.viewDidLoad()
 
 		title = "In Simple View"
 
-        phoneNumberTextField.showPhoneCode = false
+        
+        
         //phoneNumberTextField.resizableSnapshotView(from: <#T##CGRect#>, afterScreenUpdates: <#T##Bool#>, withCapInsets: <#T##UIEdgeInsets#>)
         //countrypicker.showPhone = false
         //searchVC.
@@ -102,6 +109,6 @@ extension SimpleViewController: FPNTextFieldDelegate {
 
 	func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
 		print(name, dialCode, code)
-        phoneNumberTextField.text = name
+       // phoneNumberTextField.text = name
 	}
 }

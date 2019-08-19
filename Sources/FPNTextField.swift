@@ -26,12 +26,19 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	}
 
 	/// The size of the leftView
-	private var leftViewSize: CGSize {
-		let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right + phoneCodeTextField.frame.width
+	private var leftViewSizewithoutCode: CGSize {
+		let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right
 		let height = bounds.height
 
 		return CGSize(width: width, height: height)
 	}
+    
+    private var leftViewSize: CGSize {
+        let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right + phoneCodeTextField.frame.width
+        let height = bounds.height
+        
+        return CGSize(width: width, height: height)
+    }
 
 	private var phoneCodeTextField: UITextField = UITextField()
 	private lazy var countryPicker: FPNCountryPicker = FPNCountryPicker()
@@ -47,9 +54,10 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		}
 	}
     
-    open  var showPhoneCode: Bool? {
+    open  var showPhoneCode: Bool = true {
         didSet {
             countryPicker.showPhoneNumbers = showPhoneCode
+            setup()
         }
     }
 
@@ -107,8 +115,11 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	open override func layoutSubviews() {
 		super.layoutSubviews()
 
-		flagButton.imageEdgeInsets = flagButtonEdgeInsets
-		updateLeftView()
+        flagButton.imageEdgeInsets = flagButtonEdgeInsets
+        if showPhoneCode == true {
+            updateLeftView()
+        }
+		
 	}
 
 	private func setup() {
@@ -142,7 +153,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 
 	private func setupLeftView() {
         if showPhoneCode == true {
-            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSize.width, height: leftViewSize.height))
+            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: leftViewSize.height))
             wrapperView.addSubview(flagButton)
             wrapperView.addSubview(phoneCodeTextField)
             
@@ -158,7 +169,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             leftView = wrapperView
             leftViewMode = .always
         }else {
-            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSize.width, height: leftViewSize.height))
+            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSizewithoutCode.width, height: leftViewSizewithoutCode.height))
             wrapperView.addSubview(flagButton)
 
             let views = ["flag": flagButton]
@@ -170,7 +181,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             for key in views.keys {
                 wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
             }
-            leftView?.backgroundColor = .red
+            //leftView?.backgroundColor = .red
             leftView = wrapperView
             leftViewMode = .always
         }
@@ -185,6 +196,15 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 
 		leftView?.frame = newRect
 	}
+    
+//    private func updateLeftViewwithoutCode() {
+//        let leftViewFrame: CGRect = leftView?.frame ?? .zero
+//        let width: CGFloat = min(bounds.size.width, leftViewSize.width)
+//        let height: CGFloat = min(bounds.size.height, leftViewSize.height)
+//        let newRect: CGRect = CGRect(x: leftViewFrame.minX, y: leftViewFrame.minY, width: width, height: height)
+//
+//        leftView?.frame = newRect
+//    }
 
     
 	private func setupCountryPicker() {
