@@ -13,11 +13,16 @@ class SimpleViewController: UIViewController {
 
 	@IBOutlet weak var phoneNumberTextField: FPNTextField!
 
+    let countrypicker = FPNCountryPicker()
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
 		title = "In Simple View"
 
+        phoneNumberTextField.showPhoneCode = false
+        //phoneNumberTextField.resizableSnapshotView(from: <#T##CGRect#>, afterScreenUpdates: <#T##Bool#>, withCapInsets: <#T##UIEdgeInsets#>)
+        //countrypicker.showPhone = false
+        //searchVC.
 		view.backgroundColor = UIColor.groupTableViewBackground
 
 		// To use your own flag icons, uncommment the line :
@@ -76,10 +81,14 @@ class SimpleViewController: UIViewController {
 }
 
 extension SimpleViewController: FPNTextFieldDelegate {
+    func getWithPhoneCodeOrNot(isAppeared: Bool) {
+        
+    }
+    
 
 	func fpnDidValidatePhoneNumber(textField: FPNTextField, isValid: Bool) {
-		textField.rightViewMode = .always
-		textField.rightView = UIImageView(image: isValid ? #imageLiteral(resourceName: "success") : #imageLiteral(resourceName: "error"))
+		//textField.rightViewMode = .always
+		//textField.rightView = UIImageView(image: isValid ? #imageLiteral(resourceName: "success") : #imageLiteral(resourceName: "error"))
 
 		print(
 			isValid,
@@ -93,5 +102,6 @@ extension SimpleViewController: FPNTextFieldDelegate {
 
 	func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
 		print(name, dialCode, code)
+        phoneNumberTextField.text = name
 	}
 }

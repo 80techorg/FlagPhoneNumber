@@ -20,3 +20,4 @@ class FPNCountryView: NibLoadingView {
 		countryNameLabel.text = country.name
 	}
 }
+//extension FPN

@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 
 	/// The size of the flag
@@ -45,6 +46,12 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 			phoneCodeTextField.font = font
 		}
 	}
+    
+    open  var showPhoneCode: Bool? {
+        didSet {
+            countryPicker.showPhoneNumbers = showPhoneCode
+        }
+    }
 
 	open override var textColor: UIColor? {
 		didSet {
@@ -134,22 +141,40 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	}
 
 	private func setupLeftView() {
-		let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSize.width, height: leftViewSize.height))
+        if showPhoneCode == true {
+            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSize.width, height: leftViewSize.height))
+            wrapperView.addSubview(flagButton)
+            wrapperView.addSubview(phoneCodeTextField)
+            
+            let views = ["flag": flagButton, "textField": phoneCodeTextField]
+            let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag][textField]|", options: [], metrics: nil, views: views)
+            
+            wrapperView.addConstraints(horizontalConstraints)
+            
+            for key in views.keys {
+                wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
+            }
+            
+            leftView = wrapperView
+            leftViewMode = .always
+        }else {
+            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSize.width, height: leftViewSize.height))
+            wrapperView.addSubview(flagButton)
 
-		wrapperView.addSubview(flagButton)
-		wrapperView.addSubview(phoneCodeTextField)
+            let views = ["flag": flagButton]
 
-		let views = ["flag": flagButton, "textField": phoneCodeTextField]
-		let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag][textField]|", options: [], metrics: nil, views: views)
-
-		wrapperView.addConstraints(horizontalConstraints)
-
-		for key in views.keys {
-			wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
-		}
-
-		leftView = wrapperView
-		leftViewMode = .always
+            let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag]|", options: [], metrics: nil, views: views)
+            
+            wrapperView.addConstraints(horizontalConstraints)
+            
+            for key in views.keys {
+                wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
+            }
+            leftView?.backgroundColor = .red
+            leftView = wrapperView
+            leftViewMode = .always
+        }
+		
 	}
 
 	private func updateLeftView() {
@@ -161,9 +186,9 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		leftView?.frame = newRect
 	}
 
+    
 	private func setupCountryPicker() {
 		countryPicker.countryPickerDelegate = self
-		countryPicker.showPhoneNumbers = true
 		countryPicker.backgroundColor = .white
 
 		if let regionCode = Locale.current.regionCode, let countryCode = FPNCountryCode(rawValue: regionCode) {
@@ -286,29 +311,29 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	// Private
 
 	@objc private func didEditText() {
-		if let phoneCode = selectedCountry?.phoneCode, let number = text {
-			var cleanedPhoneNumber = clean(string: "\(phoneCode) \(number)")
-
-			if let validPhoneNumber = getValidNumber(phoneNumber: cleanedPhoneNumber) {
-				nbPhoneNumber = validPhoneNumber
-
-				cleanedPhoneNumber = "+\(validPhoneNumber.countryCode.stringValue)\(validPhoneNumber.nationalNumber.stringValue)"
-
-				if let inputString = formatter?.inputString(cleanedPhoneNumber) {
-					text = remove(dialCode: phoneCode, in: inputString)
-				}
-				(delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: true)
-			} else {
-				nbPhoneNumber = nil
-
-				if let dialCode = selectedCountry?.phoneCode {
-					if let inputString = formatter?.inputString(cleanedPhoneNumber) {
-						text = remove(dialCode: dialCode, in: inputString)
-					}
-				}
-				(delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: false)
-			}
-		}
+//        if let phoneCode = selectedCountry?.phoneCode, let number = text {
+//            var cleanedPhoneNumber = clean(string: "\(phoneCode) \(number)")
+//
+//            if let validPhoneNumber = getValidNumber(phoneNumber: cleanedPhoneNumber) {
+//                nbPhoneNumber = validPhoneNumber
+//
+//                cleanedPhoneNumber = "+\(validPhoneNumber.countryCode.stringValue)\(validPhoneNumber.nationalNumber.stringValue)"
+//
+//                if let inputString = formatter?.inputString(cleanedPhoneNumber) {
+//                    text = remove(dialCode: phoneCode, in: inputString)
+//                }
+//                (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: true)
+//            } else {
+//                nbPhoneNumber = nil
+//
+//                if let dialCode = selectedCountry?.phoneCode {
+//                    if let inputString = formatter?.inputString(cleanedPhoneNumber) {
+//                        text = remove(dialCode: dialCode, in: inputString)
+//                    }
+//                }
+//                (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: false)
+//            }
+//        }
 	}
 
 	private func convert(format: FPNFormat) -> NBEPhoneNumberFormat {
@@ -432,7 +457,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	}
 
 	// - FPNDelegate
-
+    
 	internal func fpnDidSelect(country: FPNCountry) {
 		setFlag(for: country.code)
 	}

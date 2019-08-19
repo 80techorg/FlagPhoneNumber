@@ -28,6 +28,10 @@ class ScrollViewController: UIViewController {
 }
 
 extension ScrollViewController: FPNTextFieldDelegate {
+    func getWithPhoneCodeOrNot(isAppeared: Bool) {
+        
+    }
+    
 
 	func fpnDidValidatePhoneNumber(textField: FPNTextField, isValid: Bool) {
 		textField.rightViewMode = .always

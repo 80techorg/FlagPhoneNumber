@@ -15,10 +15,11 @@ class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpda
 	var results: [FPNCountry]?
 
 	weak var delegate: FPNDelegate?
-
+    var showPhoneNumbers: Bool?
+    let countrypicker = FPNCountryPicker()
 	init(countries: [FPNCountry]) {
 		super.init(nibName: nil, bundle: nil)
-
+        self.showPhoneNumbers = countrypicker.showPhoneNumbers
 		self.list = countries
 	}
 
@@ -106,7 +107,10 @@ class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpda
 		let country = getItem(at: indexPath)
 
 		cell.textLabel?.text = country.name
-		cell.detailTextLabel?.text = country.phoneCode
+        
+        if showPhoneNumbers != nil && showPhoneNumbers == true {
+            cell.detailTextLabel?.text = country.phoneCode
+        }
 		cell.imageView?.image = country.flag
 
 		return cell

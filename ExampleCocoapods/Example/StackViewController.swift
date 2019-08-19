@@ -26,6 +26,10 @@ class StackViewController: UIViewController {
 }
 
 extension StackViewController: FPNTextFieldDelegate {
+    func getWithPhoneCodeOrNot(isAppeared: Bool) {
+        
+    }
+    
 
 	func fpnDidValidatePhoneNumber(textField: FPNTextField, isValid: Bool) {
 		textField.rightViewMode = .always
