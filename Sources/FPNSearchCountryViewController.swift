@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpdating, UISearchControllerDelegate {
 
 	var searchController: UISearchController?
@@ -15,11 +16,13 @@ class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpda
 	var results: [FPNCountry]?
 
 	weak var delegate: FPNDelegate?
+    
+    
     var showPhoneNumbers: Bool?
-    let countrypicker = FPNCountryPicker()
-	init(countries: [FPNCountry]) {
+   // let countrypicker = FPNCountryPicker()
+    init(countries: [FPNCountry], showPhoneCode: Bool) {
 		super.init(nibName: nil, bundle: nil)
-        self.showPhoneNumbers = countrypicker.showPhoneNumbers
+        self.showPhoneNumbers = showPhoneCode
 		self.list = countries
 	}
 
@@ -31,6 +34,7 @@ class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpda
 		super.viewDidLoad()
 
 		initSearchBarController()
+       // countrypicker.showPhoneCodeDelegate = self
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -168,3 +172,4 @@ class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpda
 		dismissController()
 	}
 }
+

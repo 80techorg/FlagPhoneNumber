@@ -109,6 +109,6 @@ extension SimpleViewController: FPNTextFieldDelegate {
 
 	func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
 		print(name, dialCode, code)
-       // phoneNumberTextField.text = name
+        phoneNumberTextField.text = name
 	}
 }

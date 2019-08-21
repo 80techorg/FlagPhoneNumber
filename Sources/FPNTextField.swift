@@ -331,29 +331,31 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	// Private
 
 	@objc private func didEditText() {
-//        if let phoneCode = selectedCountry?.phoneCode, let number = text {
-//            var cleanedPhoneNumber = clean(string: "\(phoneCode) \(number)")
-//
-//            if let validPhoneNumber = getValidNumber(phoneNumber: cleanedPhoneNumber) {
-//                nbPhoneNumber = validPhoneNumber
-//
-//                cleanedPhoneNumber = "+\(validPhoneNumber.countryCode.stringValue)\(validPhoneNumber.nationalNumber.stringValue)"
-//
-//                if let inputString = formatter?.inputString(cleanedPhoneNumber) {
-//                    text = remove(dialCode: phoneCode, in: inputString)
-//                }
-//                (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: true)
-//            } else {
-//                nbPhoneNumber = nil
-//
-//                if let dialCode = selectedCountry?.phoneCode {
-//                    if let inputString = formatter?.inputString(cleanedPhoneNumber) {
-//                        text = remove(dialCode: dialCode, in: inputString)
-//                    }
-//                }
-//                (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: false)
-//            }
-//        }
+        if showPhoneCode == true {
+            if let phoneCode = selectedCountry?.phoneCode, let number = text {
+                var cleanedPhoneNumber = clean(string: "\(phoneCode) \(number)")
+                
+                if let validPhoneNumber = getValidNumber(phoneNumber: cleanedPhoneNumber) {
+                    nbPhoneNumber = validPhoneNumber
+                    
+                    cleanedPhoneNumber = "+\(validPhoneNumber.countryCode.stringValue)\(validPhoneNumber.nationalNumber.stringValue)"
+                    
+                    if let inputString = formatter?.inputString(cleanedPhoneNumber) {
+                        text = remove(dialCode: phoneCode, in: inputString)
+                    }
+                    (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: true)
+                } else {
+                    nbPhoneNumber = nil
+                    
+                    if let dialCode = selectedCountry?.phoneCode {
+                        if let inputString = formatter?.inputString(cleanedPhoneNumber) {
+                            text = remove(dialCode: dialCode, in: inputString)
+                        }
+                    }
+                    (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: false)
+                }
+            }
+        }
 	}
 
 	private func convert(format: FPNFormat) -> NBEPhoneNumberFormat {
@@ -415,11 +417,12 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 
 	private func showSearchController() {
 		if let countries = countryPicker.countries {
-			let searchCountryViewController = FPNSearchCountryViewController(countries: countries)
+			let searchCountryViewController = FPNSearchCountryViewController(countries: countries, showPhoneCode: showPhoneCode)
 			let navigationViewController = UINavigationController(rootViewController: searchCountryViewController)
 
 			searchCountryViewController.delegate = self
 
+            
 			parentViewController?.present(navigationViewController, animated: true, completion: nil)
 		}
 	}
@@ -472,8 +475,11 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	// - FPNCountryPickerDelegate
 
 	func countryPhoneCodePicker(_ picker: FPNCountryPicker, didSelectCountry country: FPNCountry) {
-		(delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
-		selectedCountry = country
+        if showPhoneCode == false {
+            (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
+        }
+        selectedCountry = country
+		
 	}
 
 	// - FPNDelegate

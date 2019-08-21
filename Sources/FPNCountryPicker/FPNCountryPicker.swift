@@ -1,5 +1,6 @@
 import UIKit
 
+
 open class FPNCountryPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource {
 
     
@@ -11,6 +12,8 @@ open class FPNCountryPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDat
 
 	open var selectedLocale: Locale?
 	weak var countryPickerDelegate: FPNCountryPickerDelegate?
+   // weak var searchCountryVC = FPNSearchCountryViewController()
+    
 	open var showPhoneNumbers: Bool?
 
 	override init(frame: CGRect) {
@@ -39,6 +42,9 @@ open class FPNCountryPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDat
 	public func setup(with countryCodes: [FPNCountryCode]) {
 		countries = getAllCountries(equalTo: countryCodes)
 
+//        if showPhoneNumbers != nil {
+//            searchCountryVC?.showPhoneCode = showPhoneNumbers
+//        }
 		if let code = countries.first?.code {
 			setCountry(code)
 		}
@@ -179,12 +185,10 @@ open class FPNCountryPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDat
 		}
 
 		resultView.setup(countries[row])
-
-       // print(showPhoneNumbers!)
         
-        
-        
+        //resultView.countryCodeLabel.isHidden = true
         if showPhoneNumbers != nil && showPhoneNumbers == false {
+          //  showPhoneCodeDelegate?.getPhoneCodeStatus(with: showPhoneNumbers!)
 			resultView.countryCodeLabel.isHidden = true
 		}
 		return resultView
