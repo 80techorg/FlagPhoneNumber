@@ -1,0 +1,23 @@
+PODS:
+  - FlagPhoneNumber (0.7.6):
+    - FlagPhoneNumber/libPhoneNumberiOS (= 0.7.6)
+  - FlagPhoneNumber/libPhoneNumberiOS (0.7.6)
+
+DEPENDENCIES:
+  - FlagPhoneNumber (from `https://github.com/moKelani/FlagPhoneNumber`)
+
+EXTERNAL SOURCES:
+  FlagPhoneNumber:
+    :git: https://github.com/moKelani/FlagPhoneNumber
+
+CHECKOUT OPTIONS:
+  FlagPhoneNumber:
+    :commit: 4dab423dc174a4d237dc56accea65e91915d56ca
+    :git: https://github.com/moKelani/FlagPhoneNumber
+
+SPEC CHECKSUMS:
+  FlagPhoneNumber: 3806bf0d88df2a9bc7eef4dd0d84f9ee279fe22e
+
+PODFILE CHECKSUM: 77380d27ccb03e55f25c78b28130e5beb8a7d6e1
+
+COCOAPODS: 1.7.3
