@@ -9,7 +9,7 @@ FlagPhoneNumber is a phone number textfield with a fancy country code picker.
 [![Language](https://img.shields.io/badge/language-swift-brightgreen.svg?style=flat)](https://developer.apple.com/swift)
 
 ## 🌅 Screenshot
-<iframe width="1206" height="755" src="https://www.youtube.com/embed/Yyq1Co8Ch8Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Watch the video](https://i9.ytimg.com/vi/Yyq1Co8Ch8Y/mq1.jpg?sqp=CPy39OoF&rs=AOn4CLBg1X227KRGUsrun9NMZpH1TreCIA)](https://youtu.be/vt5fpE0bzSY)
 
 
 ## 🌍 Localization
