@@ -13,20 +13,18 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var phoneTextField: FPNTextField!
     @IBOutlet weak var countryTextField: FPNTextField!
-    
+    var countryText: Bool = false
     override func viewDidLoad() {
         super.viewDidLoad()
         phoneTextField.showPhoneCode = true
         phoneTextField.parentViewController = self
         
         countryTextField.showPhoneCode = false
+        //countryTextField.showCountryText = true
         countryTextField.parentViewController = self
         countryTextField.delegate = self
         phoneTextField.delegate = self
         
-        
-        
-        // Do any additional setup after loading the view.
     }
 
     
@@ -35,10 +33,11 @@ class ViewController: UIViewController {
 extension ViewController: FPNTextFieldDelegate {
     func fpnDidValidatePhoneNumber(textField: FPNTextField, isValid: Bool) {
         print("please enter valid phone number")
+        
     }
 
     func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
         print(name, dialCode, code)
-         countryTextField.text = name
+        countryTextField.text = name
     }
 }
