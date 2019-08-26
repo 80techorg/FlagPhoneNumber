@@ -25,14 +25,6 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		}
 	}
 
-	/// The size of the leftView
-	private var leftViewSizewithoutCode: CGSize {
-		let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right
-		let height = bounds.height
-
-		return CGSize(width: width, height: height)
-	}
-    
     private var leftViewSize: CGSize {
         let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right + phoneCodeTextField.frame.width
         let height = bounds.height
@@ -45,10 +37,8 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	private lazy var phoneUtil: NBPhoneNumberUtil = NBPhoneNumberUtil()
 	private var nbPhoneNumber: NBPhoneNumber?
 	private var formatter: NBAsYouTypeFormatter?
-    var toolbar: UIToolbar = UIToolbar()
 
 	public var flagButton: UIButton = UIButton()
-    private var countryButton: UIButton = UIButton()
 
 	open override var font: UIFont? {
 		didSet {
@@ -62,12 +52,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             setup()
         }
     }
-    
-//    open  var showCountryText: Bool = false {
-//        didSet {
-//            setCountryText()
-//        }
-//    }
+
 
 	open override var textColor: UIColor? {
 		didSet {
@@ -121,59 +106,29 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		parentViewController = nil
 	}
 
-//    func setCountryText(){
-//        if showCountryText == true {
-//           text = selectedCountry?.name
-//        }
-//
-//    }
 	open override func layoutSubviews() {
 		super.layoutSubviews()
 
         flagButton.imageEdgeInsets = flagButtonEdgeInsets
-        addTarget(self, action: #selector(didEditText), for: .editingChanged)
-        if showPhoneCode == true {
-            countryButton.removeFromSuperview()
-            flagButton.addTarget(self, action: #selector(displayCountryKeyboard), for: .touchUpInside)
-            updateLeftView()
-        }else{
-            //text = selectedCountry?.name
-            setupCountryButton()
-            if firstTime == 0 {
-                text = selectedCountry?.name
-                firstTime = 1
-            }
-        }
+        updateLeftView()
+        
 		
 	}
 
 	private func setup() {
 		setupFlagButton()
+        setupPhoneCodeTextField()
+        keyboardType = .phonePad
+        autocorrectionType = .no
         addTarget(self, action: #selector(didEditText), for: .editingChanged)
-        if showPhoneCode == true {
-            setupPhoneCodeTextField()
-            countryButton.removeFromSuperview()
-            keyboardType = .phonePad
-            autocorrectionType = .no
-           // addTarget(self, action: #selector(didEditText), for: .editingChanged)
-            addTarget(self, action: #selector(displayNumberKeyBoard), for: .touchDown)
-            
-        }
+        addTarget(self, action: #selector(displayNumberKeyBoard), for: .touchDown)
+        
 		setupLeftView()
 		setupCountryPicker()
 
 		
 	}
     
-    private func setupCountryButton() {
-        countryButton.frame = CGRect(x: 0, y: 0, width: self.frame.size.width, height: self.frame.size.height)
-        countryButton.backgroundColor = .clear
-        countryButton.addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchUpInside)
-        super.addSubview(countryButton)
-        
-    
-    }
-
 	private func setupFlagButton() {
 		flagButton.contentHorizontalAlignment = .fill
 		flagButton.contentVerticalAlignment = .fill
@@ -181,6 +136,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		flagButton.accessibilityLabel = "flagButton"
 		flagButton.translatesAutoresizingMaskIntoConstraints = false
 		flagButton.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .horizontal)
+        flagButton.addTarget(self, action: #selector(displayCountryKeyboard), for: .touchUpInside)
 	}
 
 	private func setupPhoneCodeTextField() {
@@ -188,11 +144,11 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		phoneCodeTextField.translatesAutoresizingMaskIntoConstraints = false
 		phoneCodeTextField.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .horizontal)
 		phoneCodeTextField.setContentCompressionResistancePriority(UILayoutPriority.defaultHigh, for: .horizontal)
+        
 	}
 
     var firstTime = 0
 	private func setupLeftView() {
-        if showPhoneCode == true {
             let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: 32, height: leftViewSize.height))
             wrapperView.addSubview(flagButton)
             wrapperView.addSubview(phoneCodeTextField)
@@ -208,26 +164,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             
             leftView = wrapperView
             leftViewMode = .always
-        }else {
-            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSizewithoutCode.width, height: leftViewSizewithoutCode.height))
-            wrapperView.addSubview(flagButton)
-
-            let views = ["flag": flagButton]
-
-            let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag]|", options: [], metrics: nil, views: views)
-            
-            wrapperView.addConstraints(horizontalConstraints)
-            
-            for key in views.keys {
-                wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
-            }
-            
-            leftView = wrapperView
-            leftViewMode = .always
-            
-           
-        }
-		
+   
 	}
 
     
@@ -269,30 +206,16 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		becomeFirstResponder()
 	}
     
-    @objc private func displayCountryKeyboardFromButton() {
-        countryPicker.removeFromSuperview()
-        countryPicker.frame = CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
-        self.parentViewController?.view.addSubview(countryPicker)
-        self.parentViewController?.view.addSubview(getToolBarFromButton(with: getCountryListBarButtonItems()))
-        
-    }
 
 	@objc private func displayAlphabeticKeyBoard() {
-        toolbar.removeFromSuperview()
         countryPicker.removeFromSuperview()
 		showSearchController()
 	}
 
 	@objc private func resetKeyBoard() {
-        if showPhoneCode == false {
-            toolbar.removeFromSuperview()
-            countryPicker.removeFromSuperview()
-        }else {
             inputView = nil
             inputAccessoryView = nil
             resignFirstResponder()
-        }
-        
 	}
 
     
@@ -384,7 +307,6 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	// Private
 
 	@objc private func didEditText() {
-        if showPhoneCode == true {
             if let phoneCode = selectedCountry?.phoneCode, let number = text {
                 var cleanedPhoneNumber = clean(string: "\(phoneCode) \(number)")
                 
@@ -408,9 +330,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
                     (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: false)
                 }
             }
-        }else {
-            (delegate as? FPNTextFieldDelegate)?.fpnDidValidatePhoneNumber(textField: self, isValid: true)
-        }
+        
 	}
 
 	private func convert(format: FPNFormat) -> NBEPhoneNumberFormat {
@@ -493,17 +413,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		return textToolbar
 	}
     
-    private func getToolBarFromButton(with items: [UIBarButtonItem]) -> UIToolbar {
-        
-        toolbar = UIToolbar.init(frame: CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 50))
-        toolbar.barStyle = UIBarStyle.default
-        toolbar.items = items
-        toolbar.sizeToFit()
-        //text = selectedCountry?.name
-        
-        return toolbar
-    }
-
+    
 	private func getCountryListBarButtonItems() -> [UIBarButtonItem] {
 		let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 		let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(resetKeyBoard))
@@ -542,9 +452,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	// - FPNCountryPickerDelegate
 
 	func countryPhoneCodePicker(_ picker: FPNCountryPicker, didSelectCountry country: FPNCountry) {
-        if showPhoneCode == false {
-            (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
-        }
+        (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
         selectedCountry = country
 		
 	}
