@@ -304,7 +304,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     // - FPNCountryPickerDelegate
     
     func countryPhoneCodePicker(_ picker: FPNCountryPicker, didSelectCountry country: FPNCountry) {
-        
+        (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(textField: self, name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
         selectedCountry = country
         
     }
