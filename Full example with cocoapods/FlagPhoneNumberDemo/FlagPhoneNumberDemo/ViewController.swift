@@ -18,7 +18,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         phoneTextField.showPhoneCode = true
         phoneTextField.parentViewController = self
-        phoneTextField.setFlag(for: FPNCountryCode.KW)
+//        phoneTextField.setFlag(for: FPNCountryCode.KW)
         countryTextField.showPhoneCode = false
         //countryTextField.showCountryText = true
         countryTextField.parentViewController = self
@@ -39,6 +39,6 @@ extension ViewController: FPNTextFieldDelegate {
 
     func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
         print(name, dialCode, code)
-        countryTextField.text = name
+       // countryTextField.text = name
     }
 }

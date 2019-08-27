@@ -5,6 +5,7 @@
 //  Created by Mohamed El-Said on 8/25/19.
 //
 
+
 import UIKit
 
 
@@ -42,7 +43,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     
     private lazy var countryPicker: FPNCountryPicker = FPNCountryPicker()
-    var toolbar: UIToolbar = UIToolbar()
+    private var toolbar: UIToolbar = UIToolbar()
     
     public var flagButton: UIButton = UIButton()
     private var countryButton: UIButton = UIButton()
@@ -56,7 +57,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     
-
+    
     open var selectedCountry: FPNCountry? {
         didSet {
             updateUI()
@@ -67,7 +68,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     /// If set, a search button appears in the picker inputAccessoryView to present a country search view controller
     @IBOutlet public var parentViewController: UIViewController?
     
-
+    
     
     init() {
         super.init(frame: .zero)
@@ -90,7 +91,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     deinit {
         parentViewController = nil
     }
-
+    
     open override func layoutSubviews() {
         super.layoutSubviews()
         flagButton.imageEdgeInsets = flagButtonEdgeInsets
@@ -137,24 +138,24 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     private func setupLeftView() {
-   
-            let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSizewithoutCode.width, height: leftViewSizewithoutCode.height))
-            wrapperView.addSubview(flagButton)
-            
-            let views = ["flag": flagButton]
-            
-            let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag]|", options: [], metrics: nil, views: views)
-            
-            wrapperView.addConstraints(horizontalConstraints)
-            
-            for key in views.keys {
-                wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
-            }
-            
-            leftView = wrapperView
-            leftViewMode = .always
         
-
+        let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSizewithoutCode.width, height: leftViewSizewithoutCode.height))
+        wrapperView.addSubview(flagButton)
+        
+        let views = ["flag": flagButton]
+        
+        let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag]|", options: [], metrics: nil, views: views)
+        
+        wrapperView.addConstraints(horizontalConstraints)
+        
+        for key in views.keys {
+            wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
+        }
+        
+        leftView = wrapperView
+        leftViewMode = .always
+        
+        
     }
     
     
@@ -169,11 +170,15 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             countryPicker.setCountry(firstCountry.code)
         }
     }
-
+    
     
     @objc private func displayCountryKeyboardFromButton() {
+        
+        inputView = nil
+        inputAccessoryView = nil
         toolbar.removeFromSuperview()
-        countryPicker.removeFromSuperview()
+        FCTextField().countryPicker.removeFromSuperview()
+        //super.removeFromSuperview()
         countryPicker.frame = CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
         self.parentViewController?.view.addSubview(countryPicker)
         self.parentViewController?.view.addSubview(getToolBarFromButton(with: getCountryListBarButtonItems()))
@@ -199,7 +204,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         countryPicker.setCountry(countryCode)
     }
     
-   
+    
     /// Set the country list excluding the provided countries
     public func setCountries(excluding countries: [FPNCountryCode]) {
         countryPicker.setup(without: countries)
@@ -244,14 +249,14 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     // Private
     
     @objc private func didEditText() {
-            flagButton.setImage(selectedCountry?.flag, for: .normal)
-            text = selectedCountry?.name
+        flagButton.setImage(selectedCountry?.flag, for: .normal)
+        text = selectedCountry?.name
     }
     
-   
+    
     
     private func updateUI() {
-
+        
         didEditText()
     }
     
@@ -285,12 +290,13 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         doneButton.accessibilityLabel = "doneButton"
         
         if parentViewController != nil {
-            let searchButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.search, target: self, action: #selector(displayAlphabeticKeyBoard))
+            let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(displayAlphabeticKeyBoard))
             
             searchButton.accessibilityLabel = "searchButton"
             
             return [searchButton, space, doneButton]
         }
+        doneButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.red], for: .normal)
         return [space, doneButton]
     }
     
@@ -298,9 +304,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     // - FPNCountryPickerDelegate
     
     func countryPhoneCodePicker(_ picker: FPNCountryPicker, didSelectCountry country: FPNCountry) {
-        if showPhoneCode == false {
-            (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
-        }
+        
         selectedCountry = country
         
     }

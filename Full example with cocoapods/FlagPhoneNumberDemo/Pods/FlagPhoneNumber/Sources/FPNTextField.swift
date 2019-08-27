@@ -146,6 +146,18 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 		phoneCodeTextField.setContentCompressionResistancePriority(UILayoutPriority.defaultHigh, for: .horizontal)
         
 	}
+    
+    func removeSubViews() {
+        if parentViewController != nil {
+            if let foundPickerView = parentViewController?.view.viewWithTag(0xDEADBEEE) {
+                foundPickerView.removeFromSuperview()
+            }
+            
+            if let foundToolView = parentViewController?.view.viewWithTag(0xDEADBEED) {
+                foundToolView.removeFromSuperview()
+            }
+        }
+    }
 
     var firstTime = 0
 	private func setupLeftView() {
@@ -181,6 +193,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 
     
 	private func setupCountryPicker() {
+        countryPicker.tag = 0xDEADBEEF
 		countryPicker.countryPickerDelegate = self
 		countryPicker.backgroundColor = .white
 
@@ -199,6 +212,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
 	}
 
 	@objc private func displayCountryKeyboard() {
+        removeSubViews()
 		inputView = countryPicker
 		inputAccessoryView = getToolBar(with: getCountryListBarButtonItems())
 		tintColor = .clear
