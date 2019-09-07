@@ -43,10 +43,10 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     
     private lazy var countryPicker: FPNCountryPicker = FPNCountryPicker()
-    private var toolbar: UIToolbar = UIToolbar()
+    //private var toolbar: UIToolbar = UIToolbar()
     
     public var flagButton: UIButton = UIButton()
-    private var countryButton: UIButton = UIButton()
+    // private var countryButton: UIButton = UIButton()
     
     
     open  var showPhoneCode: Bool = true {
@@ -101,23 +101,9 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     private func setup() {
         setupFlagButton()
         setupLeftView()
-        setupCountryButton()
+        displayCountryKeyboardFromButton()
         setupCountryPicker()
-        
-        
     }
-    
-    private func setupCountryButton() {
-        countryButton.frame = CGRect(x: 0, y: 0, width: self.frame.size.width+leftViewSizewithoutCode.width, height: self.frame.size.height)
-        countryButton.backgroundColor = .clear
-        countryButton.addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchUpInside)
-        countryButton.tag = 500
-        super.addSubview(countryButton)
-        
-        
-    }
-    
-    //private var flagImage = UIImage()
     
     func setupFlagImage() {
         //flagImage.con
@@ -173,27 +159,27 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     
     @objc private func displayCountryKeyboardFromButton() {
-        
-        inputView = nil
-        inputAccessoryView = nil
-        toolbar.removeFromSuperview()
-        FCTextField().countryPicker.removeFromSuperview()
-        //super.removeFromSuperview()
-        countryPicker.frame = CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
-        self.parentViewController?.view.addSubview(countryPicker)
-        self.parentViewController?.view.addSubview(getToolBarFromButton(with: getCountryListBarButtonItems()))
-        
+        // self.resignFirstResponder()
+        self.inputView = countryPicker
+        self.inputAccessoryView = getToolBarFromButton(with: getCountryListBarButtonItems())
+        self.tintColor = .clear
+        self.reloadInputViews()
+        // self.becomeFirstResponder()
     }
     
     @objc private func displayAlphabeticKeyBoard() {
-        toolbar.removeFromSuperview()
         countryPicker.removeFromSuperview()
+        resetKeyBoard()
         showSearchController()
     }
     
     @objc private func resetKeyBoard() {
-        toolbar.removeFromSuperview()
-        countryPicker.removeFromSuperview()
+        inputView = countryPicker
+        //inputAccessoryView = getToolBarFromButton(with: getCountryListBarButtonItems())
+        if parentViewController != nil {
+            parentViewController?.view.endEditing(true)
+        }
+        resignFirstResponder()
     }
     
     
@@ -274,13 +260,13 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     private func getToolBarFromButton(with items: [UIBarButtonItem]) -> UIToolbar {
         
-        toolbar = UIToolbar.init(frame: CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 50))
-        toolbar.barStyle = UIBarStyle.default
-        toolbar.items = items
-        toolbar.sizeToFit()
-        //text = selectedCountry?.name
+        let textToolbar: UIToolbar = UIToolbar()
         
-        return toolbar
+        textToolbar.barStyle = UIBarStyle.default
+        textToolbar.items = items
+        textToolbar.sizeToFit()
+        
+        return textToolbar
     }
     
     private func getCountryListBarButtonItems() -> [UIBarButtonItem] {
@@ -294,9 +280,10 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             
             searchButton.accessibilityLabel = "searchButton"
             
+            
             return [searchButton, space, doneButton]
         }
-        doneButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.red], for: .normal)
+        
         return [space, doneButton]
     }
     

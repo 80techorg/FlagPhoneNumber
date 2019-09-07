@@ -102,9 +102,9 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setup()
     }
     
-    deinit {
-        parentViewController = nil
-    }
+    //    deinit {
+    //        parentViewController = nil
+    //    }
     
     open override func layoutSubviews() {
         super.layoutSubviews()

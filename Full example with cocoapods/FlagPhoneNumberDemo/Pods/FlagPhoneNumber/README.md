@@ -9,7 +9,7 @@ FlagPhoneNumber is a phone number textfield with a fancy country code picker.
 [![Language](https://img.shields.io/badge/language-swift-brightgreen.svg?style=flat)](https://developer.apple.com/swift)
 
 ## 🌅 Screenshot
-<img src="./Screenshot/screenshot_1.PNG" width="288px"> <img src="./Screenshot/screenshot_2.PNG" width="288px"> <img src="./Screenshot/screenshot_3.PNG" width="288px">
+[![Watch the video](https://i9.ytimg.com/vi/Yyq1Co8Ch8Y/mq1.jpg?sqp=CPy39OoF&rs=AOn4CLBg1X227KRGUsrun9NMZpH1TreCIA)](https://youtu.be/Yyq1Co8Ch8Y)
 
 
 ## 🌍 Localization
@@ -18,26 +18,17 @@ Country names are displayed according to the phone language
 
 ## 📲 Example
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+you can see full example with cocoapods to see how it work.
 
 ## ⬇️ Installation
 
-FlagPhoneNumber is available through [CocoaPods](http://cocoapods.org) and [Carthage](https://github.com/Carthage/Carthage). 
-
-### Carthage
-
-Simply add in your `Cartfile` the following line: 
-
-```ruby
-github "chronotruck/FlagPhoneNumber"
-```
 
 ### Cocoapods
 
 Simply add in your `Podfile` the following line:
 
 ```ruby
-pod "FlagPhoneNumber"
+pod 'FlagPhoneNumber', :git => 'https://github.com/moKelani/FlagPhoneNumber'
 ```
 
 ### Manually
@@ -141,31 +132,3 @@ You can choose which country can appears in the list:
 phoneNumberTextField.setCountries(including: [.FR, .ES, .IT, .BE, .LU, .DE])
 ```
 
-Or exclude countries from the list:
-```swift
-phoneNumberTextField.setCountries(excluding: [.AM, .BW, .BA])
-```
-
-
-## ✨ Next Improvments
-- [x] Localization
-- [x] Country search
-- [x] Placeholder
-- [x] Exclude/Include countries
-- [x] Objective-C Support
-- [x] Right-to-left
-- [ ] Any idea ?
-
-## ☕️ Conception
-This library is high inspired of MRCountryPicker library and use libPhoneNumber-iOS library.
-https://github.com/xtrinch/MRCountryPicker / https://github.com/iziz/libPhoneNumber-iOS
-
-Open source time proudly sponsored by Chronotruck.
-
-## 💁🏻‍♂️ Author
-grifas, aurelien.grifasi@chronotruck.com
-
-Don't hesitate to contact me or make a pull request to upgrade this library.
-
-## 📝 License
-FlagPhoneNumber is available under the Apache license. See the LICENSE file for more info.

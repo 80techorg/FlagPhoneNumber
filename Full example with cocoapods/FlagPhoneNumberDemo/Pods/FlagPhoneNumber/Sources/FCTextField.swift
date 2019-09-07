@@ -5,6 +5,7 @@
 //  Created by Mohamed El-Said on 8/25/19.
 //
 
+
 import UIKit
 
 
@@ -98,7 +99,6 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     private func setup() {
-        
         setupFlagButton()
         setupLeftView()
         setupCountryButton()
@@ -111,9 +111,17 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         countryButton.frame = CGRect(x: 0, y: 0, width: self.frame.size.width+leftViewSizewithoutCode.width, height: self.frame.size.height)
         countryButton.backgroundColor = .clear
         countryButton.addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchUpInside)
+        countryButton.tag = 500
         super.addSubview(countryButton)
+        
+        
     }
     
+    //private var flagImage = UIImage()
+    
+    func setupFlagImage() {
+        //flagImage.con
+    }
     
     private func setupFlagButton() {
         flagButton.contentHorizontalAlignment = .fill
@@ -127,13 +135,6 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         flagButton.isUserInteractionEnabled = false
         flagButton.translatesAutoresizingMaskIntoConstraints = false
         flagButton.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .horizontal)
-    }
-    
-    func removeSubViews() {
-        super.inputView = nil
-        super.inputAccessoryView = nil
-        super.tintColor = .clear
-        super.reloadInputViews()
     }
     
     private func setupLeftView() {
@@ -160,7 +161,6 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     
     private func setupCountryPicker() {
-        countryPicker.tag = 0xDEADBEEE
         countryPicker.countryPickerDelegate = self
         countryPicker.backgroundColor = .white
         
@@ -174,11 +174,11 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     @objc private func displayCountryKeyboardFromButton() {
         
-        //removeSubViews()
-        //toolbar.removeFromSuperview()
-        //FCTextField().countryPicker.removeFromSuperview()
+        inputView = nil
+        inputAccessoryView = nil
+        toolbar.removeFromSuperview()
+        FCTextField().countryPicker.removeFromSuperview()
         //super.removeFromSuperview()
-        resignFirstResponder()
         countryPicker.frame = CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 300)
         self.parentViewController?.view.addSubview(countryPicker)
         self.parentViewController?.view.addSubview(getToolBarFromButton(with: getCountryListBarButtonItems()))
@@ -273,7 +273,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     private func getToolBarFromButton(with items: [UIBarButtonItem]) -> UIToolbar {
-        toolbar.tag = 0xDEADBEED
+        
         toolbar = UIToolbar.init(frame: CGRect.init(x: 0.0, y: UIScreen.main.bounds.size.height - 300, width: UIScreen.main.bounds.size.width, height: 50))
         toolbar.barStyle = UIBarStyle.default
         toolbar.items = items
@@ -304,7 +304,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     // - FPNCountryPickerDelegate
     
     func countryPhoneCodePicker(_ picker: FPNCountryPicker, didSelectCountry country: FPNCountry) {
-        
+        (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(textField: self, name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
         selectedCountry = country
         
     }
