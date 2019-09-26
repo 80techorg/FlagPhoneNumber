@@ -101,6 +101,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     private func setup() {
         setupFlagButton()
         setupLeftView()
+        displayCountryKeyboardFromButton()
         addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchDown)
         setupCountryPicker()
     }
