@@ -102,13 +102,10 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setupFlagButton()
         setupLeftView()
         addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchDown)
-        //addTarget(self, action: #selector(didEditText), for: .editingChanged)
-        //displayCountryKeyboardFromButton()
         setupCountryPicker()
     }
     
     func setupFlagImage() {
-        //flagImage.con
     }
     
     private func setupFlagButton() {
