@@ -21,8 +21,10 @@ class ViewController: UIViewController {
 //        phoneTextField.setFlag(for: FPNCountryCode.KW)
         countryTextField.showPhoneCode = false
         //countryTextField.showCountryText = true
+        
+        countryTextField.setFlag(for: FPNCountryCode.init(rawValue: "KW")!)
+        countryTextField.showPhoneCode = false
         countryTextField.parentViewController = self
-        countryTextField.setFlag(for: FPNCountryCode.KW)
         countryTextField.delegate = self
         phoneTextField.delegate = self
         
@@ -32,13 +34,17 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: FPNTextFieldDelegate {
+    func fpnDidSelectCountry(textField: UITextField, name: String, dialCode: String, code: String) {
+        
+    }
+    
     func fpnDidValidatePhoneNumber(textField: FPNTextField, isValid: Bool) {
         print("please enter valid phone number")
         
     }
 
-    func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
-        print(name, dialCode, code)
-       // countryTextField.text = name
-    }
+//    func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
+//        print(name, dialCode, code)
+//       // countryTextField.text = name
+//    }
 }

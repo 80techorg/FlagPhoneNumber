@@ -102,9 +102,9 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setup()
     }
     
-    //    deinit {
-    //        parentViewController = nil
-    //    }
+    deinit {
+        parentViewController = nil
+    }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
@@ -361,10 +361,6 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             layoutSubviews()
         }
         
-        
-        //        if hasPhoneNumberExample == true {
-        //            updatePlaceholder()
-        //        }
         didEditText()
     }
     
