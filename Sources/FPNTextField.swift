@@ -102,9 +102,9 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setup()
     }
     
-    deinit {
-        parentViewController = nil
-    }
+    //    deinit {
+    //        parentViewController = nil
+    //    }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
@@ -120,7 +120,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setupPhoneCodeTextField()
         keyboardType = .phonePad
         autocorrectionType = .no
-        addTarget(self, action: #selector(didEditText), for: .editingChanged)
+        addTarget(self, action: #selector(didEditText), for: .editingDidEnd)
         addTarget(self, action: #selector(displayNumberKeyBoard), for: .touchDown)
         
         setupLeftView()
@@ -309,7 +309,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     @objc private func didEditText() {
         // countryPicker.removeFromSuperview()
-        if let phoneCode = selectedCountry?.phoneCode, let number = text {
+        if let phoneCode = selectedCountry?.phoneCode, let number = text, !number.isEmpty {
             var cleanedPhoneNumber = clean(string: "\(phoneCode) \(number)")
             
             if let validPhoneNumber = getValidNumber(phoneNumber: cleanedPhoneNumber) {
@@ -361,6 +361,10 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
             layoutSubviews()
         }
         
+        
+        //        if hasPhoneNumberExample == true {
+        //            updatePlaceholder()
+        //        }
         didEditText()
     }
     
