@@ -14,23 +14,22 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     /// The size of the flag
     @objc public var flagSize: CGSize = CGSize(width: 32, height: 32) {
         didSet {
-            layoutSubviews()
+            //layoutSubviews()
+            layoutIfNeeded()
         }
     }
-    
-    /// The edges insets of the flag button
-    @objc public var flagButtonEdgeInsets: UIEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5) {
-        didSet {
-            layoutSubviews()
-        }
-    }
-    
-    private var leftViewSize: CGSize {
-        let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right + phoneCodeTextField.frame.width
-        let height = bounds.height
-        
-        return CGSize(width: width, height: height)
-    }
+
+    private var flagWidthConstraint: NSLayoutConstraint?
+      private var flagHeightConstraint: NSLayoutConstraint?
+
+
+    /// The size of the leftView
+      private var leftViewSize: CGSize {
+          let width = flagButtonSize.width + getWidth(text: phoneCodeTextField.text!)
+          let height = bounds.height
+
+          return CGSize(width: width, height: height)
+      }
     
     private var phoneCodeTextField: UITextField = UITextField()
     private lazy var countryPicker: FPNCountryPicker = FPNCountryPicker()
@@ -166,6 +165,13 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         leftViewMode = .always
         
     }
+
+    open override func updateConstraints() {
+          super.updateConstraints()
+
+          flagWidthConstraint?.constant = flagButtonSize.width
+          flagHeightConstraint?.constant = flagButtonSize.height
+      }
     
     
     private func updateLeftView() {
@@ -357,8 +363,8 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         
         if let phoneCode = selectedCountry?.phoneCode {
             phoneCodeTextField.text = phoneCode
-            phoneCodeTextField.sizeToFit()
-            layoutSubviews()
+            //phoneCodeTextField.sizeToFit()
+            //layoutSubviews()
         }
         
         
@@ -375,6 +381,19 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         
         return string.components(separatedBy: allowedCharactersSet.inverted).joined(separator: "")
     }
+
+    private func getWidth(text: String) -> CGFloat {
+          if let font = phoneCodeTextField.font {
+              let fontAttributes = [NSAttributedString.Key.font: font]
+              let size = (text as NSString).size(withAttributes: fontAttributes)
+
+              return size.width.rounded(.up)
+          } else {
+              phoneCodeTextField.sizeToFit()
+
+              return phoneCodeTextField.frame.size.width.rounded(.up)
+          }
+      }
     
     private func getValidNumber(phoneNumber: String) -> NBPhoneNumber? {
         guard let countryCode = selectedCountry?.code else { return nil }
