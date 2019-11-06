@@ -12,7 +12,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   FlagPhoneNumber:
-    :commit: b7104342fd1866a839ba81437609ec3af78f86d3
+    :commit: 68f951ff55798c9668ce6d80ccd2cc123a913c96
     :git: https://github.com/moKelani/FlagPhoneNumber
 
 SPEC CHECKSUMS:

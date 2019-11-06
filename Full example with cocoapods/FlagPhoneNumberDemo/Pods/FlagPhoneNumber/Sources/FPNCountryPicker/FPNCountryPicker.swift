@@ -1,204 +1,175 @@
 import UIKit
 
-
 open class FPNCountryPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource {
 
-    
-	var countries: [FPNCountry]! {
-		didSet {
-			reloadAllComponents()
-		}
-	}
+    var countries: [FPNCountry]! {
+        didSet {
+            reloadAllComponents()
+        }
+    }
 
-	open var selectedLocale: Locale?
-	weak var countryPickerDelegate: FPNCountryPickerDelegate?
-   // weak var searchCountryVC = FPNSearchCountryViewController()
-    
-	open var showPhoneNumbers: Bool?
+    open var selectedLocale: Locale?
+    weak var countryPickerDelegate: FPNCountryPickerDelegate?
+    open var showPhoneNumbers: Bool = true
 
-	override init(frame: CGRect) {
-		super.init(frame: frame)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-		setup()
-	}
+        setup()
+    }
 
-	required public init?(coder aDecoder: NSCoder) {
-		super.init(coder: aDecoder)
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
 
-		setup()
-	}
+        setup()
+    }
 
-	func setup() {
-		if let code = Locale.preferredLanguages.first {
-			self.selectedLocale = Locale(identifier: code)
-		}
+    func setup() {
+        if let code = Locale.preferredLanguages.first {
+            self.selectedLocale = Locale(identifier: code)
+        }
 
-		countries = getAllCountries()
+        countries = getAllCountries()
 
-		super.dataSource = self
-		super.delegate = self
-	}
+        super.dataSource = self
+        super.delegate = self
+    }
 
-	public func setup(with countryCodes: [FPNCountryCode]) {
-		countries = getAllCountries(equalTo: countryCodes)
+    public func setup(with countryCodes: [FPNCountryCode]) {
+        countries = getAllCountries(equalTo: countryCodes)
 
-//        if showPhoneNumbers != nil {
-//            searchCountryVC?.showPhoneCode = showPhoneNumbers
-//        }
-		if let code = countries.first?.code {
-			setCountry(code)
-		}
-	}
+        if let code = countries.first?.code {
+            setCountry(code)
+        }
+    }
 
-	public func setup(without countryCodes: [FPNCountryCode]) {
-		countries = getAllCountries(excluding: countryCodes)
+    public func setup(without countryCodes: [FPNCountryCode]) {
+        countries = getAllCountries(excluding: countryCodes)
 
-		if let code = countries.first?.code {
-			setCountry(code)
-		}
-	}
+        if let code = countries.first?.code {
+            setCountry(code)
+        }
+    }
 
-	// MARK: - Locale Methods
+    // MARK: - Locale Methods
+    open func setLocale(_ locale: String) {
+        self.selectedLocale = Locale(identifier: locale)
+    }
 
-	open func setLocale(_ locale: String) {
-		self.selectedLocale = Locale(identifier: locale)
-	}
+    // MARK: - FPNCountry Methods
+    open func setCountry(_ code: FPNCountryCode) {
+        for index in 0..<countries.count {
+            if countries[index].code == code {
+                return self.setCountryByRow(row: index)
+            }
+        }
+    }
 
-	// MARK: - FPNCountry Methods
+    func setCountryByRow(row: Int) {
+        self.selectRow(row, inComponent: 0, animated: true)
 
-	open func setCountry(_ code: FPNCountryCode) {
-		for index in 0..<countries.count {
-			if countries[index].code == code {
-				return self.setCountryByRow(row: index)
-			}
-		}
-	}
+        if countries.count > 0 {
+            let country = countries[row]
 
-	open func setCountryByPhoneCode(_ phoneCode: String) {
-		for index in 0..<countries.count {
-			if countries[index].phoneCode == phoneCode {
-				return self.setCountryByRow(row: index)
-			}
-		}
-	}
+            countryPickerDelegate?.countryPhoneCodePicker(self, didSelectCountry: country)
+        }
+    }
 
-	open func setCountryByName(_ name: String) {
-		for index in 0..<countries.count {
-			if countries[index].name == name {
-				return self.setCountryByRow(row: index)
-			}
-		}
-	}
+    // Populates the metadata from the included json file resource
+    private func getAllCountries() -> [FPNCountry] {
+        let bundle: Bundle = Bundle.FlagPhoneNumber()
+        let resource: String = "countryCodes"
+        let jsonPath = bundle.path(forResource: resource, ofType: "json")
 
-	func setCountryByRow(row: Int) {
-		self.selectRow(row, inComponent: 0, animated: true)
+        assert(jsonPath != nil, "Resource file is not found in the Bundle")
 
-		if countries.count > 0 {
-			let country = countries[row]
+        let jsonData = try? Data(contentsOf: URL(fileURLWithPath: jsonPath!))
 
-			countryPickerDelegate?.countryPhoneCodePicker(self, didSelectCountry: country)
-		}
-	}
+        assert(jsonPath != nil, "Resource file is not found")
 
-	// Populates the metadata from the included json file resource
+        var countries = [FPNCountry]()
 
-	private func getAllCountries() -> [FPNCountry] {
-		let bundle: Bundle = Bundle.FlagPhoneNumber()
-		let resource: String = "countryCodes"
-		let jsonPath = bundle.path(forResource: resource, ofType: "json")
+        do {
+            if let jsonObjects = try JSONSerialization.jsonObject(with: jsonData!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSArray {
 
-		assert(jsonPath != nil, "Resource file is not found in the Bundle")
+                for jsonObject in jsonObjects {
+                    guard let countryObj = jsonObject as? NSDictionary else { return countries }
+                    guard let code = countryObj["code"] as? String, let phoneCode = countryObj["dial_code"] as? String, let name = countryObj["name"] as? String else { return countries }
 
-		let jsonData = try? Data(contentsOf: URL(fileURLWithPath: jsonPath!))
+                    if let locale = self.selectedLocale {
+                        let country = FPNCountry(code: code, name: locale.localizedString(forRegionCode: code) ?? name, phoneCode: phoneCode)
 
-		assert(jsonPath != nil, "Resource file is not found")
+                        countries.append(country)
+                    } else {
+                        let country = FPNCountry(code: code, name: name, phoneCode: phoneCode)
 
-		var countries = [FPNCountry]()
+                        countries.append(country)
+                    }
+                }
 
-		do {
-			if let jsonObjects = try JSONSerialization.jsonObject(with: jsonData!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSArray {
+            }
+        } catch let error {
+            assertionFailure(error.localizedDescription)
+        }
+        return countries.sorted(by: { $0.name < $1.name })
+    }
 
-				for jsonObject in jsonObjects {
-					guard let countryObj = jsonObject as? NSDictionary else { return countries }
-					guard let code = countryObj["code"] as? String, let phoneCode = countryObj["dial_code"] as? String, let name = countryObj["name"] as? String else { return countries }
+    private func getAllCountries(excluding countryCodes: [FPNCountryCode]) -> [FPNCountry] {
+        var allCountries = getAllCountries()
 
-					if let locale = self.selectedLocale {
-						let country = FPNCountry(code: code, name: locale.localizedString(forRegionCode: code) ?? name, phoneCode: phoneCode)
+        for countryCode in countryCodes {
+            allCountries.removeAll(where: { (country: FPNCountry) -> Bool in
+                return country.code == countryCode
+            })
+        }
+        return allCountries
+    }
 
-						countries.append(country)
-					} else {
-						let country = FPNCountry(code: code, name: name, phoneCode: phoneCode)
+    private func getAllCountries(equalTo countryCodes: [FPNCountryCode]) -> [FPNCountry] {
+        let allCountries = getAllCountries()
+        var countries = [FPNCountry]()
 
-						countries.append(country)
-					}
-				}
+        for countryCode in countryCodes {
+            for country in allCountries {
+                if country.code == countryCode {
+                    countries.append(country)
+                }
+            }
+        }
+        return countries
+    }
 
-			}
-		} catch let error {
-			assertionFailure(error.localizedDescription)
-		}
-		return countries.sorted(by: { $0.name < $1.name })
-	}
+    // MARK: - Picker Methods
+    open func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
 
-	private func getAllCountries(excluding countryCodes: [FPNCountryCode]) -> [FPNCountry] {
-		var allCountries = getAllCountries()
+    open func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return countries.count
+    }
 
-		for countryCode in countryCodes {
-			allCountries.removeAll(where: { (country: FPNCountry) -> Bool in
-				return country.code == countryCode
-			})
-		}
-		return allCountries
-	}
+    open func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        var resultView: FPNCountryView
 
-	private func getAllCountries(equalTo countryCodes: [FPNCountryCode]) -> [FPNCountry] {
-		let allCountries = getAllCountries()
-		var countries = [FPNCountry]()
+        if view == nil {
+            resultView = FPNCountryView()
+        } else {
+            resultView = view as! FPNCountryView
+        }
 
-		for countryCode in countryCodes {
-			for country in allCountries {
-				if country.code == countryCode {
-					countries.append(country)
-				}
-			}
-		}
-		return countries
-	}
+        resultView.setup(countries[row])
 
-	// MARK: - Picker Methods
+        if !showPhoneNumbers {
+            resultView.countryCodeLabel.isHidden = true
+        }
+        return resultView
+    }
 
-	open func numberOfComponents(in pickerView: UIPickerView) -> Int {
-		return 1
-	}
+    open func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if countries.count > 0 {
+            let country = countries[row]
 
-	open func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-		return countries.count
-	}
-
-	open func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-		var resultView: FPNCountryView
-
-		if view == nil {
-			resultView = FPNCountryView()
-		} else {
-			resultView = view as! FPNCountryView
-		}
-
-		resultView.setup(countries[row])
-        
-        //resultView.countryCodeLabel.isHidden = true
-        if showPhoneNumbers != nil && showPhoneNumbers == false {
-          //  showPhoneCodeDelegate?.getPhoneCodeStatus(with: showPhoneNumbers!)
-			resultView.countryCodeLabel.isHidden = true
-		}
-		return resultView
-	}
-
-	open func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-		if countries.count > 0 {
-			let country = countries[row]
-
-			countryPickerDelegate?.countryPhoneCodePicker(self, didSelectCountry: country)
-		}
-	}
+            countryPickerDelegate?.countryPhoneCodePicker(self, didSelectCountry: country)
+        }
+    }
 }

@@ -20,27 +20,22 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     /// The size of the flag
-    @objc public var flagSize: CGSize = CGSize(width: 32, height: 32) {
+    @objc public var flagButtonSize: CGSize = CGSize(width: 32, height: 32) {
         didSet {
-            layoutSubviews()
+            layoutIfNeeded()
         }
     }
     
-    /// The edges insets of the flag button
-    @objc public var flagButtonEdgeInsets: UIEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5) {
-        didSet {
-            layoutSubviews()
-        }
-    }
-    
+    private var flagWidthConstraint: NSLayoutConstraint?
+    private var flagHeightConstraint: NSLayoutConstraint?
+ 
     /// The size of the leftView
-    private var leftViewSizewithoutCode: CGSize {
-        let width = flagSize.width + flagButtonEdgeInsets.left + flagButtonEdgeInsets.right
+    private var leftViewSize: CGSize {
+        let width = flagButtonSize.width
         let height = bounds.height
-        
+
         return CGSize(width: width, height: height)
     }
-    
     
     private lazy var countryPicker: FPNCountryPicker = FPNCountryPicker()
     //private var toolbar: UIToolbar = UIToolbar()
@@ -92,21 +87,17 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         parentViewController = nil
     }
     
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        flagButton.imageEdgeInsets = flagButtonEdgeInsets
-        addTarget(self, action: #selector(didEditText), for: .editingChanged)
-    }
-    
     private func setup() {
         setupFlagButton()
         setupLeftView()
-        displayCountryKeyboardFromButton()
         addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchDown)
+        //addTarget(self, action: #selector(didEditText), for: .editingChanged)
+        //displayCountryKeyboardFromButton()
         setupCountryPicker()
     }
     
     func setupFlagImage() {
+        //flagImage.con
     }
     
     private func setupFlagButton() {
@@ -121,30 +112,53 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         flagButton.isUserInteractionEnabled = false
         flagButton.translatesAutoresizingMaskIntoConstraints = false
         flagButton.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .horizontal)
+        flagButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     }
     
     private func setupLeftView() {
         
-        let wrapperView = UIView(frame: CGRect(x: 0, y: 0, width: leftViewSizewithoutCode.width, height: leftViewSizewithoutCode.height))
-        wrapperView.addSubview(flagButton)
-        
-        let views = ["flag": flagButton]
-        
-        let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[flag]|", options: [], metrics: nil, views: views)
-        
-        wrapperView.addConstraints(horizontalConstraints)
-        
-        for key in views.keys {
-            wrapperView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[\(key)]|", options: [], metrics: nil, views: views))
-        }
-        
-        leftView = wrapperView
+        leftView = UIView()
         leftViewMode = .always
+       
+
+        leftView?.addSubview(flagButton)
+        //leftView?.addSubview(phoneCodeTextField)
+
+
+        flagWidthConstraint = NSLayoutConstraint(item: flagButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: flagButtonSize.width)
+        flagHeightConstraint = NSLayoutConstraint(item: flagButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: flagButtonSize.height)
+
+        flagWidthConstraint?.isActive = true
+        flagHeightConstraint?.isActive = true
+
+        NSLayoutConstraint(item: flagButton, attribute: .centerY, relatedBy: .equal, toItem: leftView, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
+
+        NSLayoutConstraint(item: flagButton, attribute: .leading, relatedBy: .equal, toItem: leftView, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: flagButton, attribute: .leading, relatedBy: .equal, toItem: flagButton, attribute: .trailing, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: flagButton, attribute: .trailing, relatedBy: .equal, toItem: leftView, attribute: .trailing, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: flagButton, attribute: .top, relatedBy: .equal, toItem: leftView, attribute: .top, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: flagButton, attribute: .bottom, relatedBy: .equal, toItem: leftView, attribute: .bottom, multiplier: 1, constant: 0).isActive = true
         
         
     }
     
+    open override func updateConstraints() {
+        super.updateConstraints()
+
+       // flagButton.imageEdgeInsets = flagButtonEdgeInsets
+        flagWidthConstraint?.constant = flagButtonSize.width
+        flagHeightConstraint?.constant = flagButtonSize.height
+    }
     
+//    private func updateLeftView() {
+//        let leftViewFrame: CGRect = leftView?.frame ?? .zero
+//        let width: CGFloat = min(bounds.size.width, leftViewSize.width)
+//        let height: CGFloat = min(bounds.size.height, leftViewSize.height)
+//        let newRect: CGRect = CGRect(x: leftViewFrame.minX, y: leftViewFrame.minY, width: width, height: height)
+//
+//        leftView?.frame = newRect
+//
+//    }
     
     private func setupCountryPicker() {
         countryPicker.countryPickerDelegate = self
