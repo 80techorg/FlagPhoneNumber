@@ -11,7 +11,6 @@ import UIKit
 
 open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
-    
     override open var isHighlighted: Bool {
         didSet {
             // clear background color when selected
@@ -20,7 +19,7 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     /// The size of the flag
-    @objc public var flagButtonSize: CGSize = CGSize(width: 32, height: 32) {
+    @objc public var flagButtonSize: CGSize = CGSize(width: 50, height: 50) {
         didSet {
             layoutIfNeeded()
         }
@@ -38,10 +37,8 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     }
     
     private lazy var countryPicker: FPNCountryPicker = FPNCountryPicker()
-    //private var toolbar: UIToolbar = UIToolbar()
     
     public var flagButton: UIButton = UIButton()
-    // private var countryButton: UIButton = UIButton()
     
     
     open  var showPhoneCode: Bool = true {
@@ -91,8 +88,6 @@ open class FCTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setupFlagButton()
         setupLeftView()
         addTarget(self, action: #selector(displayCountryKeyboardFromButton), for: .touchDown)
-        //addTarget(self, action: #selector(didEditText), for: .editingChanged)
-        //displayCountryKeyboardFromButton()
         setupCountryPicker()
     }
     
