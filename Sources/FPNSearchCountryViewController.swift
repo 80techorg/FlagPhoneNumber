@@ -115,7 +115,7 @@ class FPNSearchCountryViewController: UITableViewController, UISearchResultsUpda
         if showPhoneNumbers != nil && showPhoneNumbers == true {
             cell.detailTextLabel?.text = country.phoneCode
         }
-		cell.imageView?.image = country.flag
+        cell.imageView?.image = country.flag
 
 		return cell
 	}
