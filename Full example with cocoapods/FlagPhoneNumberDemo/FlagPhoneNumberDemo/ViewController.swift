@@ -12,20 +12,12 @@ import FlagPhoneNumber
 class ViewController: UIViewController {
 
     @IBOutlet weak var phoneTextField: FPNTextField!
-    @IBOutlet weak var countryTextField: FCTextField!
     var countryText: Bool = false
     override func viewDidLoad() {
         super.viewDidLoad()
-        phoneTextField.showPhoneCode = true
         phoneTextField.parentViewController = self
-//        phoneTextField.setFlag(for: FPNCountryCode.KW)
-        countryTextField.showPhoneCode = false
         //countryTextField.showCountryText = true
         
-        countryTextField.setFlag(for: FPNCountryCode.init(rawValue: "KW")!)
-        countryTextField.showPhoneCode = false
-        countryTextField.parentViewController = self
-        countryTextField.delegate = self
         phoneTextField.delegate = self
         
     }
@@ -43,8 +35,4 @@ extension ViewController: FPNTextFieldDelegate {
         
     }
 
-//    func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
-//        print(name, dialCode, code)
-//       // countryTextField.text = name
-//    }
 }

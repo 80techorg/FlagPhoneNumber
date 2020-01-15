@@ -12,9 +12,8 @@ import UIKit
 open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     /// The size of the flag
-    @objc public var flagButtonSize: CGSize = CGSize(width: 32, height: 32) {
+    @objc public var flagButtonSize: CGSize = CGSize(width: 39, height: 39) {
         didSet {
-            //layoutSubviews()
             layoutIfNeeded()
         }
     }
@@ -46,14 +45,6 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         }
     }
     
-    open  var showPhoneCode: Bool = true {
-        didSet {
-            countryPicker.showPhoneNumbers = showPhoneCode
-            setup()
-        }
-    }
-    
-    
     open override var textColor: UIColor? {
         didSet {
             phoneCodeTextField.textColor = textColor
@@ -74,7 +65,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     open var selectedCountry: FPNCountry? {
         didSet {
             updateUI()
-            
+            updateLeftView()
         }
     }
     
@@ -102,10 +93,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         setup()
     }
     
-    //    deinit {
-    //        parentViewController = nil
-    //    }
-    
+  
     
     
     private func setup() {
@@ -130,6 +118,8 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         flagButton.translatesAutoresizingMaskIntoConstraints = false
         flagButton.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .horizontal)
         flagButton.addTarget(self, action: #selector(displayCountryKeyboard), for: .touchUpInside)
+        flagButton.adjustsImageWhenHighlighted = false
+        flagButton.adjustsImageWhenDisabled = false
         flagButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     }
     
@@ -154,12 +144,10 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         leftView?.addSubview(flagButton)
         leftView?.addSubview(phoneCodeTextField)
 
-
+        
         flagWidthConstraint = NSLayoutConstraint(item: flagButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: flagButtonSize.width)
         flagHeightConstraint = NSLayoutConstraint(item: flagButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: flagButtonSize.height)
 
-        flagWidthConstraint?.isActive = true
-        flagHeightConstraint?.isActive = true
 
         NSLayoutConstraint(item: flagButton, attribute: .centerY, relatedBy: .equal, toItem: leftView, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
 
@@ -189,8 +177,6 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
         leftView?.frame = newRect
         
     }
-    
-    
     
     private func setupCountryPicker() {
         countryPicker.countryPickerDelegate = self
@@ -415,7 +401,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     
     private func showSearchController() {
         if let countries = countryPicker.countries {
-            let searchCountryViewController = FPNSearchCountryViewController(countries: countries, showPhoneCode: showPhoneCode)
+            let searchCountryViewController = FPNSearchCountryViewController(countries: countries)
             let navigationViewController = UINavigationController(rootViewController: searchCountryViewController)
             
             searchCountryViewController.delegate = self
@@ -476,6 +462,7 @@ open class FPNTextField: UITextField, FPNCountryPickerDelegate, FPNDelegate {
     func countryPhoneCodePicker(_ picker: FPNCountryPicker, didSelectCountry country: FPNCountry) {
         (delegate as? FPNTextFieldDelegate)?.fpnDidSelectCountry(textField: self, name: country.name, dialCode: country.phoneCode, code: country.code.rawValue)
         selectedCountry = country
+        
         
         
     }
